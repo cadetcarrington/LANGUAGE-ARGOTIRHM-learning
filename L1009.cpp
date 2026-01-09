@@ -26,6 +26,7 @@ int main (){
 
     scanf("%d", &n);
 
+    int special = 0;
     for (int i = 0; i < n; i ++){
         // scanf("%s", get);
         // if (get[0] == '-'){
@@ -44,7 +45,11 @@ int main (){
             a[i].c = true;
             a[i].a = -a[i].a;
         }
-        a[i].num = 1.0 * a[i].a / a[i].b;
+        if (a[i].b == 0 || a[i].a == 0){
+            i --;
+            n --;
+        }
+        //a[i].num = 1.0 * a[i].a / a[i].b;
         //cout << a[i].num << endl;
         //sum += a[i].num;
         //cout << sum << endl;
