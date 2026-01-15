@@ -22,14 +22,17 @@ int main (){
             a[k].check = false;
         }
                 
-        for (int i = 0; i < 1000; i ++){
+        for (int i = 0; i < 10000; i ++){
             int s;
             scanf("%d", &s);
 
             if(s == 0){
                 scanf(" %c %s", &a[s].status, a[s].time1);
-                if(num[j] == 0 || sum[j] == 0){
+                if(num[j] == 0){
                     printf("0 0\n");
+                }
+                else if(sum[j]== 0){
+                    printf("%d 0\n", num[j]);
                 }
                 else{ 
                     printf("%d %d\n", num[j], (int)((double)sum[j] / num[j] + 0.5));
