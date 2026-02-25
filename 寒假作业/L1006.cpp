@@ -7,7 +7,7 @@ int main (){
     scanf("%d", &n);
 
     int ch = sqrt(n);
-    int len = 1, star = 0;
+    int len = 0, star = 0;
 
     for (int i = 2; i < ch + 2; i ++){
         if (n % i != 0){
@@ -32,10 +32,15 @@ int main (){
         }
     }
 
+    if(len == 0){
+        printf("1\n%d\n", n);
+        return 0;
+    }
     printf("%d\n", len);
     for (int i = star ; i < star + len - 1; i ++){
         printf("%d*", i);
     }
     printf("%d\n", star + len - 1);
+
     return 0;
 }
