@@ -9,7 +9,7 @@ int a[N], b[N];
 
 void insert(int l, int r, int c){
     b[l] += c;
-    b[r] -= c;
+    b[r + 1] -= c;
 }
 
 int main (){
@@ -32,7 +32,7 @@ int main (){
     }
 
     for (int i = 1; i <= n; i ++){
-        printf("%d ", a[i]);
+        printf("%d ", b[i]);
     }
     return 0;
 }
