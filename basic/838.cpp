@@ -11,7 +11,7 @@ int h[N];
 void down(int u){
     int t = u;
     if(u * 2 <= sizee && h[u * 2] < h[t]) t = u * 2;
-    if(u * 2 + 1<= sizee && h[u * 2 + 1] < h[t]) t = u * 2 + 1;
+    if(u * 2 + 1 <= sizee && h[u * 2 + 1] < h[t]) t = u * 2 + 1;
     if(u != t){
         swap(h[u], h[t]);
         down(t);
