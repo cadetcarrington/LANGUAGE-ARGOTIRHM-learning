@@ -18,7 +18,7 @@ int main (){
     cin.tie(nullptr);
 
     cin >> n >> m;
-    for (int i = 0; i <= n; i ++){
+    for (int i = 0; i <= m; i ++){
         cin >> a[i] >> b[i];
     }
     cin >> k;
@@ -28,21 +28,26 @@ int main (){
         cin >> c >> d;
         
         for (int i = 0; i <= n; i ++){
-            a[i] = i;
+            p[i] = i;
         }
         sum = n;
 
         for(int i = 0; i <= c; i ++){
-            if(find(a[i] != b[i])){
+            if(find(a[i]) != find(b[i])){
                 //p[find(a[i])] = find(b[i]);
-                p[p[a[i]]] = p[b[i]];
+                p[find(a[i])] = find(b[i]);
                 sum --;
             }
         }
 
-        
+        for (int i = d + 1; i <= n; i ++){
+            if(find(a[i]) != find(b[i])){
+                p[find(a[i])] = find(b[i]);
+                sum --;
+            }
+        }
 
-
+        cout << sum << endl;
 
     }
 
