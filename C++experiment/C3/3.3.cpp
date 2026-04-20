@@ -11,13 +11,13 @@ class Date{
             year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + (s[2] - '0') * 10 + (s[3] - '0');
             month = (s[5] - '0') * 10 + (s[6] - '0');
             day = (s[8] - '0') * 10 + (s[9] - '0');
-            std::cout << "gouzao(Date)::string" << std::endl;
+            //std::cout << "gouzao(Date)::string" << std::endl;
         }
         Date(int y, int m, int d):year(y), month(m), day(d){
-            std::cout << "gouzao(Date)::int" << std::endl;
+            //std::cout << "gouzao(Date)::int" << std::endl;
         }
         ~Date(){
-            std::cout << "xigou(Date)" << std::endl;
+            //std::cout << "xigou(Date)" << std::endl;
         }
         void Get(){
             std::cout << "Current Status: year: " << year 
@@ -46,28 +46,30 @@ class People{
     private:
         int number;
         std::string sex;
+        std::string name;
         Date birthday;
         int id;
     public:
-        void input(int n, std::string s, Date b, int i){
+        void input(int n, std::string nm, std::string s, Date b, int i){
             number = n;
+            name = nm;
             sex = s;
             birthday = b;
             id = i;
         }
 
         void output(){
-            std::cout << "number: " << number << "\nsex: " << sex << "\nbirthday: " << birthday.show();
+            std::cout << "number: " << number << "\nname: " << name << "\nsex: " << sex << "\nbirthday: " << birthday.show();
             //birthday.get();
             std::cout << "\nid: " << id << std::endl;
         }
 
-        People(int n = -1, std::string s = "-1-1", Date b = Date(), int i = -1)
-            :number(n), sex(s), birthday(b), id(i){
-            std::cout << "gouzao" << std::endl;
+        People(int n = -1, std::string nm = "Unknown", std::string s = "-1-1", Date b = Date(), int i = -1)
+            :number(n), name(nm), sex(s), birthday(b), id(i){
+            //std::cout << "gouzao" << std::endl;
         }
         ~People(){
-            std::cout << "xigou" << std::endl;
+            //std::cout << "xigou" << std::endl;
         }
 };
 
@@ -79,18 +81,23 @@ int n, m;
 People a[N];
 
 int main (){ 
+    printf("输入人数和操作次数：");
     cin >> n >> m;
 
     while(m --){
         char o[2];
-        int getid, getnumber, getyear, getmonth, getday;
-        string getsex, getbirthday;
+        int getid, getnumber;
+        string getsex, getbirthday, name;
+        printf("输入操作：(I输入、O输出):");
         cin >> o;
         if(o[0] == 'I'){
-            cin >> getid >> getnumber >> getbirthday >> getday;
-            a[getid].input(getnumber, getsex, getbirthday, getid);
+            cout << "输入id、number、name、sex(male/female)、birthday(格式：2005-01-26 ):" << endl;
+            cin >> getid >> getnumber >> name >> getsex >> getbirthday;
+            Date birthday(getbirthday);
+            a[getid].input(getnumber, name, getsex, birthday, getid);
         }
-        else if(o[0] == 'Q'){
+        else if(o[0] == 'O'){
+            cout << "输入id:";
             cin >> getid;
             a[getid].output();
         }
