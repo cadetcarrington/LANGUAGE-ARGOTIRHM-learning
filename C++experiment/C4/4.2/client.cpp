@@ -18,7 +18,7 @@ void Client::ChangeServerName(int id, std::string newName) {
         return;
     }
     ServerNames.push_back({id, newName});
-    if(id >= ClientNum) ClientNum ++;
+    if(id > ClientNum) ClientNum ++;
     sort(ServerNames.begin(), ServerNames.end());
 }
 
