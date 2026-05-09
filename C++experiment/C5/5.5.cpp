@@ -7,7 +7,10 @@ class Employee {
         S Name, Address, City;
         int CodeNumber;
     public:
-        Employee(S name = "sullyoon", S address = "jypp", S city = "seoul", int codeNumber = 123456) : Name(name), Address(address), City(city), CodeNumber(codeNumber) {};
+        Employee(S name = "sullyoon", S address = "jypp",
+             S city = "seoul", int codeNumber = 123456) 
+             : Name(name), Address(address), City(city), 
+             CodeNumber(codeNumber) {};
         
         void changeName(S name) { Name = name; }
         void in(S name, S address, S city, int codeNumber) { 

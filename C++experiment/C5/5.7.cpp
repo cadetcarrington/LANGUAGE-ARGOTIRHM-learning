@@ -11,7 +11,8 @@ class Date{
     public:
         Date(std::string s = "2005-01-26"){
             //sscanf(s.c_str(), "%d-%d-%d", &year, &month, &day);
-            year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + (s[2] - '0') * 10 + (s[3] - '0');
+            year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + 
+            (s[2] - '0') * 10 + (s[3] - '0');
             month = (s[5] - '0') * 10 + (s[6] - '0');
             day = (s[8] - '0') * 10 + (s[9] - '0');
             //std::cout << "gouzao(Date)::string" << std::endl;
@@ -36,18 +37,21 @@ class Date{
 
         void input(std::string s){
             //sscanf(s.c_str(), "%d-%d-%d", &year, &month, &day);
-            year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + (s[2] - '0') * 10 + (s[3] - '0');
+            year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + 
+            (s[2] - '0') * 10 + (s[3] - '0');
             month = (s[5] - '0') * 10 + (s[6] - '0');
             day = (s[8] - '0') * 10 + (s[9] - '0');
         }
         std::string show(){
-            return std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+            return std::to_string(year) + "-" + 
+            std::to_string(month) + "-" + std::to_string(day);
         }
 };
 
 class People{
     public:
-        People(char * name, char * number, char * sex, char * id, Date &birthday){
+        People(char * name, char * number, char * sex, 
+            char * id, Date &birthday){
             strcpy(this->name, name);
             strcpy(this->number, number);
             strcpy(this->sex, sex);
@@ -62,6 +66,11 @@ class People{
             strcpy(this->id, p.id);
             this->birthday = p.birthday;
         }
+        People() : birthday("2000-01-01") {
+            name[0] = '\0'; number[0] = '\0'; sex[0] = '\0'; 
+            id[0] = '\0';
+        }
+
         ~People(){}
 
         void input(char * Name, char * Number, char * Sex, char * Id, Date &Birthday){
@@ -79,6 +88,9 @@ class People{
             std::cout << "Id: " << id << std::endl;
             std::cout << "Birthday: ";
             birthday.Get();
+        }
+        bool operator<(const People &other) const {
+            return true; 
         }
     private:
         char name[11], number[7], sex[3], id[16];
