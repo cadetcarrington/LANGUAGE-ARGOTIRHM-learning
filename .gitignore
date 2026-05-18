@@ -3532,3 +3532,6 @@ matmul_learning/Strassen/matmul/matmul_main
 # Large generated data / archives
 /matmul_learning/dgemm.tar.gz
 /matmul_learning/Strassen/matmul/data/refer_4096.txt
+
+# Binary files added by ignore_binaries.sh on 2026-05-18
+/luogu/2-1/p1314
