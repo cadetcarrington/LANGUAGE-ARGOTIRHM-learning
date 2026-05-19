@@ -6,8 +6,6 @@ SCRIPT_NAME="$(basename "$0")"
 
 DRY_RUN=0
 INCLUDE_OCTET_STREAM=0
-SCAN_EXECUTABLE=0
-SCAN_ALL=0
 BATCH_SIZE=200
 
 usage() {
@@ -15,10 +13,12 @@ usage() {
 用法:
   $SCRIPT_NAME [选项]
 
+说明:
+  本脚本采用全量扫描模式，无视文件后缀名和权限，直接通过读取所有文件的底层
+  文件头 (Magic Number) 来精准揪出所有二进制程序文件，并支持多核并行加速。
+
 选项:
   --dry-run                只显示将要添加的内容，不修改 .gitignore
-  --scan-all               🔥 无视后缀名和权限，全量扫描（配合并行化速度极快）
-  --scan-executable        扫描所有带可执行权限的文件
   --include-octet-stream   也把 application/octet-stream 当作二进制文件处理
   -h, --help               显示帮助
 EOF
@@ -27,16 +27,14 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --dry-run) DRY_RUN=1 ;;
-        --scan-all) SCAN_ALL=1 ;;
         --include-octet-stream) INCLUDE_OCTET_STREAM=1 ;;
-        --scan-executable) SCAN_EXECUTABLE=1 ;;
         -h|--help) usage; exit 0 ;;
         *) echo "❌ 未知参数: $1"; usage; exit 1 ;;
     esac
     shift
 done
 
-# 获取 CPU 核心数用于并行 (Linux 使用 nproc, macOS 使用 sysctl)
+# 获取 CPU 核心数用于并行加速
 if command -v nproc >/dev/null 2>&1; then
     CORES=$(nproc)
 elif command -v sysctl >/dev/null 2>&1; then
@@ -69,56 +67,36 @@ elif [[ "$DRY_RUN" -eq 0 ]]; then
     touch -- "$GITIGNORE"
 fi
 
-if [[ "$SCAN_ALL" -eq 1 ]]; then
-    echo "🔍 [全量并行模式] 开启 $CORES 线程读取底层文件头..."
-else
-    echo "🔍 [并行模式] 开启 $CORES 线程扫描二进制文件..."
-fi
-
+echo "🔍 [全量并行模式] 开启 $CORES 线程读取底层文件头..."
 if [[ "$DRY_RUN" -eq 1 ]]; then echo "🧪 当前为 dry-run 模式，不会修改 $GITIGNORE"; fi
 
 # ==========================================
-# 🛠️ 构建多线程 Worker 脚本
+# 🛠️ 构建多线程 Worker 脚本 (纯净全量模式)
 # ==========================================
 cat << 'EOF' > "$worker_script"
 #!/usr/bin/env bash
-# 接收 xargs 传来的文件列表
 files=("$@")
 [[ ${#files[@]} -eq 0 ]] && exit 0
 
 valid_files=()
 for file in "${files[@]}"; do
     clean_path="${file#./}"
+    # 仅跳过脚本自身和 .gitignore，其余全部送检
     case "$clean_path" in
         "$GITIGNORE_NAME"|"$SCRIPT_NAME"|"$SCRIPT_NAME".bak.*) continue ;;
+        *) valid_files+=("$file") ;;
     esac
-
-    if [[ "$SCAN_ALL" -eq 1 ]]; then
-        valid_files+=("$file")
-    else
-        is_candidate=0
-        case "$clean_path" in
-            *.o|*.a|*.so|*.so.*|*.out|*.bin|*.exe|*.dll|*.dylib|*.class|*.pyc|*.pyo|*.mod|*.gch|*.pcm|*.dSYM|*.wasm)
-                is_candidate=1 ;;
-        esac
-        if [[ "$is_candidate" -eq 1 ]]; then
-            valid_files+=("$file")
-        elif [[ "$SCAN_EXECUTABLE" -eq 1 && -x "$file" ]]; then
-            valid_files+=("$file")
-        fi
-    fi
 done
 
 [[ ${#valid_files[@]} -eq 0 ]] && exit 0
 
-# 多线程安全输出文件（按进程 PID 命名，避免抢占冲突）
 output_file="$WORKER_RESULTS_DIR/result_$\$.txt"
 
-# 批量执行 file
+# 批量执行 file 命令
 mime_output=$(file --mime-type -b -- "${valid_files[@]}" 2>/dev/null)
 [[ -z "$mime_output" ]] && exit 0
 
-# 解析 file 输出并判定
+# 解析输出结果
 i=0
 echo "$mime_output" | while IFS= read -r mimetype; do
     if [[ "$i" -lt "${#valid_files[@]}" ]]; then
@@ -135,9 +113,8 @@ echo "$mime_output" | while IFS= read -r mimetype; do
         esac
 
         if [[ "$is_bin" -eq 1 ]]; then
-            # 过滤换行符
             case "$clean_path" in
-                *$'\n'*) ;;
+                *$'\n'*) ;; # 跳过包含换行符的奇葩路径
                 *) echo "$clean_path" >> "$output_file" ;;
             esac
         fi
@@ -147,11 +124,8 @@ done
 EOF
 chmod +x "$worker_script"
 
-# 导出环境变量供 Worker 使用
 export GITIGNORE_NAME="$GITIGNORE"
 export SCRIPT_NAME
-export SCAN_ALL
-export SCAN_EXECUTABLE
 export INCLUDE_OCTET_STREAM
 export WORKER_RESULTS_DIR="$worker_results_dir"
 
@@ -170,7 +144,7 @@ find . \
 find "$worker_results_dir" -type f -name 'result_*.txt' -exec cat {} + > "$candidates_paths"
 
 # ==========================================
-# ✨ 批量去重与过滤 (维持极速不变)
+# ✨ 批量去重与过滤
 # ==========================================
 binary_found=$(wc -l < "$candidates_paths" | tr -d ' ')
 added=0
