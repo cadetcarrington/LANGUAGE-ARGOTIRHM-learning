@@ -3540,3 +3540,13 @@ matmul_learning/Strassen/matmul/matmul_main
 /luogu/p3397
 /basic/804
 /basic/差分矩阵
+
+# Binary files added by ignore_binaries.sh on 2026-05-22
+/matmul_learning/matmul/matmul_main
+/matmul_learning/matmul/src/file_operations.o
+/matmul_learning/matmul/src/main.o
+/matmul_learning/matmul/src/matrix_operations.o
+/matmul_learning/Strassen_improve/matmul/matmul_main
+/matmul_learning/Strassen_improve/matmul/src/file_operations.o
+/matmul_learning/Strassen_improve/matmul/src/main.o
+/matmul_learning/Strassen_improve/matmul/src/matrix_operations.o
