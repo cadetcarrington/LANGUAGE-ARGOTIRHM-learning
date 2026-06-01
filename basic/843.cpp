@@ -10,7 +10,7 @@ bool col[N], dg[2 * N - 1], udg[2 * N - 1];
 
 void dfs(int u){
     if(u == n){
-        for (int i = 0; i <= n; i ++){
+        for (int i = 0; i < n; i ++){
             puts(g[i]);
         }
         puts("");
@@ -18,12 +18,12 @@ void dfs(int u){
     }
 
     for (int i = 0; i < n; i ++){
-        if(!col[i] && !dg[u + i] && !udg[n - u - i]){
+        if(!col[i] && !dg[u + i] && !udg[n - u + i]){
             g[u][i] = 'Q';
             col[i] = dg[u + i] = udg[n - u + i] = true;
             dfs(u + 1);
             col[i] = dg[u + i] = udg[n - u + i] = false;
-            g[u][i] = 'Q';
+            g[u][i] = '.';
         }
     }
 }
